@@ -27,7 +27,7 @@ class TaskService
         $tasks = $cache->remember(
             $key,
             $ttl,
-            fn (): Collection => $this->taskRepository->all($status)
+            fn (): array => $this->taskRepository->all($status)->toArray()
         );
 
         $result = new \stdClass();
@@ -44,26 +44,16 @@ class TaskService
 
     public function create(mixed $data)
     {
-        $cache = Cache::driver();
-
-        $cache->forget(
-            $this->getCacheListKey($data['status'] ?? null)
-        );
-
         return $this->taskRepository->created($data);
     }
 
     public function update(Task $task, mixed $validated)
     {
-        $cache = Cache::driver();
-
-        $cache->forget(
-            $this->getCacheListKey($task->status)
-        );
 
         if ($task->status !== $validated['status']) {
+            $cache = Cache::driver();
             $cache->forget(
-                $this->getCacheListKey($validated['status'])
+                $this->getCacheListKey($task->status)
             );
         }
 
@@ -72,12 +62,6 @@ class TaskService
 
     public function delete(Task $task)
     {
-        $cache = Cache::driver();
-
-        $cache->forget(
-            $this->getCacheListKey($task->status)
-        );
-
         return $this->taskRepository->delete($task);
     }
 }
