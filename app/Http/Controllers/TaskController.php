@@ -4,19 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskRequest;
 use App\Models\Task;
+use App\Service\TaskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends Controller
 {
+    public function __construct(
+        private TaskService $taskService,
+    ) { }
+
     public function index(Request $request): JsonResponse
     {
         $status = $request->string('status')->toString();
-        $tasks = Task::query()
-            ->when($status, fn ($query) => $query->where('status', $status))
-            ->latest('id')
-            ->get();
+
+        $tasks = $this->taskService->all($status);
 
         return response()->json(['data' => $tasks]);
     }
