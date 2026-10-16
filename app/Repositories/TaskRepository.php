@@ -15,4 +15,19 @@ class TaskRepository
             ->get();
     }
 
+    public function created(mixed $data)
+    {
+        return Task::query()->create($data);
+    }
+
+    public function update(Task $task, mixed $validated)
+    {
+        return $task->update($validated);
+    }
+
+    public function delete(Task $task)
+    {
+        return $task->delete();
+    }
+
 }

@@ -133,4 +133,6 @@ return [
 
     'serializable_classes' => false,
 
+    'ttl_seconds' => env('CACHE_TTL_SECONDS', 30),
+
 ];
