@@ -16,7 +16,7 @@ class TaskService
 
     public function all(?string $status): \stdClass
     {
-        $key = 'tasks:list:'.($status ?? 'all');
+        $key = $this->getCacheListKey($status);
 
         $cache = Cache::driver();
 
@@ -37,18 +37,47 @@ class TaskService
         return $result;
     }
 
+    private function getCacheListKey(?string $status): string
+    {
+        return 'tasks:list:'.($status ?? 'all');
+    }
+
     public function create(mixed $data)
     {
+        $cache = Cache::driver();
+
+        $cache->forget(
+            $this->getCacheListKey($data['status'] ?? null)
+        );
+
         return $this->taskRepository->created($data);
     }
 
     public function update(Task $task, mixed $validated)
     {
+        $cache = Cache::driver();
+
+        $cache->forget(
+            $this->getCacheListKey($task->status)
+        );
+
+        if ($task->status !== $validated['status']) {
+            $cache->forget(
+                $this->getCacheListKey($validated['status'])
+            );
+        }
+
         return $this->taskRepository->update($task, $validated);
     }
 
     public function delete(Task $task)
     {
+        $cache = Cache::driver();
+
+        $cache->forget(
+            $this->getCacheListKey($task->status)
+        );
+
         return $this->taskRepository->delete($task);
     }
 }

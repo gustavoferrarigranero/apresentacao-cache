@@ -1,6 +1,6 @@
 # Projeto inicial
 
-API REST de tarefas pronta para receber, durante a aula, os exemplos de cache da apresentação. O projeto já contém Laravel 13, SQLite, Redis via Docker, Predis, CRUD completo e testes. Nenhuma estratégia de cache, invalidação, Pub/Sub ou rate limiting está implementada.
+API REST de tarefas pronta para receber os exemplos das aulas de cache e filas. O projeto contém Laravel 13, SQLite, Redis via Docker, Predis, Laravel Horizon, CRUD completo e testes. A conexão de filas já aponta para o Redis, mas o projeto não possui jobs, endpoints de disparo ou chamadas `dispatch` implementadas.
 
 ## Preparação
 
@@ -15,6 +15,14 @@ php artisan serve
 ```
 
 Se o arquivo `.env` já existir, não é necessário copiá-lo novamente.
+
+Para iniciar o worker quando a aula chegar à criação do primeiro job:
+
+```bash
+php artisan queue:work redis
+```
+
+O worker ficará aguardando jobs na fila. O projeto inicial não despacha nenhum job por conta própria.
 
 ## Endpoints
 
